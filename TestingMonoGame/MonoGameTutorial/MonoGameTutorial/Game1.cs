@@ -12,6 +12,7 @@ namespace MonoGameTutorial
         Texture2D TargetSprite;
         Texture2D CrossHairsSrpite;
         Texture2D BackGroundSprite;
+        SpriteFont GameFont;
 
         public Game1()
         {
@@ -34,6 +35,8 @@ namespace MonoGameTutorial
             TargetSprite = Content.Load<Texture2D>("target");
             CrossHairsSrpite = Content.Load<Texture2D>("crosshairs");
             BackGroundSprite = Content.Load<Texture2D>("sky");
+
+            GameFont = Content.Load<SpriteFont>("galleryFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,8 +55,9 @@ namespace MonoGameTutorial
 
             _spriteBatch.Begin();
             _spriteBatch.Draw(BackGroundSprite, new Vector2(0, 0), Color.White);
-            _spriteBatch.Draw(TargetSprite, new Vector2(0,0), Color.White);
-            _spriteBatch.Draw(CrossHairsSrpite, new Vector2(100, 0), Color.White);
+            _spriteBatch.DrawString(GameFont, "Text :)", new Vector2(0, 0), Color.White);
+            _spriteBatch.Draw(TargetSprite, new Vector2(50,0), Color.White);
+            _spriteBatch.Draw(CrossHairsSrpite, new Vector2(150, 0), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
