@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace MonoGameTutorial
 {
@@ -13,6 +14,15 @@ namespace MonoGameTutorial
         Texture2D CrossHairsSrpite;
         Texture2D BackGroundSprite;
         SpriteFont GameFont;
+
+        Vector2 TargetsPosition = new Vector2(30, 200);
+        const int TargetRadius = 45;
+
+        int RandomCaller = 0;
+        Random TargetRandomXPosition = new Random(185481);
+        Random TargetRandomYPosition = new Random(754154);
+
+        int Score = 0;
 
         public Game1()
         {
@@ -45,7 +55,14 @@ namespace MonoGameTutorial
                 Exit();
 
             // TODO: Add your update logic here
+            if (RandomCaller == 120)
+            {
+                TargetsPosition.X = TargetRandomXPosition.Next(0, 650);
+                TargetsPosition.Y = TargetRandomYPosition.Next(0, 320);
+                RandomCaller = 0;
+            }
 
+            RandomCaller++;
             base.Update(gameTime);
         }
 
@@ -55,8 +72,8 @@ namespace MonoGameTutorial
 
             _spriteBatch.Begin();
             _spriteBatch.Draw(BackGroundSprite, new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(GameFont, "Text :)", new Vector2(0, 0), Color.White);
-            _spriteBatch.Draw(TargetSprite, new Vector2(50,0), Color.White);
+            _spriteBatch.DrawString(GameFont, "Score: " + Score, new Vector2(0, 0), Color.White);
+            _spriteBatch.Draw(TargetSprite, TargetsPosition, Color.White);
             _spriteBatch.Draw(CrossHairsSrpite, new Vector2(150, 0), Color.White);
             _spriteBatch.End();
 
