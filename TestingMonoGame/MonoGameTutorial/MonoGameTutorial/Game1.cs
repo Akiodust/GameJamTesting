@@ -16,6 +16,7 @@ namespace MonoGameTutorial
         SpriteFont GameFont;
 
         Vector2 TargetsPosition = new Vector2(30, 200);
+        Vector2 CrossHairPosition = new Vector2(30, 200);
         const int TargetRadius = 45;
 
         int RandomCaller = 0;
@@ -23,6 +24,11 @@ namespace MonoGameTutorial
         Random TargetRandomYPosition = new Random(754154);
 
         int Score = 0;
+
+        MouseState MState;
+        bool IsMouseReleased = false;
+
+        int CrossHairTimer = 0;
 
         public Game1()
         {
@@ -33,8 +39,6 @@ namespace MonoGameTutorial
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -53,17 +57,47 @@ namespace MonoGameTutorial
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            MState = Mouse.GetState();
 
-            // TODO: Add your update logic here
-            if (RandomCaller == 120)
+            if (MState.LeftButton == ButtonState.Released)
             {
-                TargetsPosition.X = TargetRandomXPosition.Next(0, 650);
-                TargetsPosition.Y = TargetRandomYPosition.Next(0, 320);
+                IsMouseReleased = true;
+            }
+            if (IsMouseReleased && MState.LeftButton == ButtonState.Pressed)
+            {
+                CrossHairPosition.X = MState.Position.X - 25;
+                CrossHairPosition.Y = MState.Position.Y - 25;
+                IsMouseReleased = false;
+                CrossHairTimer = 0;
+                TargetMouseCollision();
+            }
+
+            if (RandomCaller >= 60)
+            {
+                RandomizeTargetLocation();
                 RandomCaller = 0;
             }
 
             RandomCaller++;
             base.Update(gameTime);
+        }
+
+        private bool TargetMouseCollision()
+        {
+            float mouseTargetDist = Vector2.Distance(TargetsPosition, MState.Position.ToVector2());
+            if(mouseTargetDist < TargetRadius)
+            {
+                Score++;
+                RandomizeTargetLocation();
+                return true;
+            }
+            return false;
+        }
+        private void RandomizeTargetLocation()
+        {
+            TargetsPosition.X = TargetRandomXPosition.Next(0, _graphics.PreferredBackBufferWidth);
+            TargetsPosition.Y = TargetRandomYPosition.Next(0, _graphics.PreferredBackBufferHeight);
+            RandomCaller = 0;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -73,8 +107,12 @@ namespace MonoGameTutorial
             _spriteBatch.Begin();
             _spriteBatch.Draw(BackGroundSprite, new Vector2(0, 0), Color.White);
             _spriteBatch.DrawString(GameFont, "Score: " + Score, new Vector2(0, 0), Color.White);
-            _spriteBatch.Draw(TargetSprite, TargetsPosition, Color.White);
-            _spriteBatch.Draw(CrossHairsSrpite, new Vector2(150, 0), Color.White);
+            _spriteBatch.Draw(TargetSprite, new Vector2(TargetsPosition.X - 45, TargetsPosition.Y - 45), Color.White);
+            if (CrossHairTimer < 30 )
+            {
+                _spriteBatch.Draw(CrossHairsSrpite, CrossHairPosition, Color.White);
+                CrossHairTimer++;
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
